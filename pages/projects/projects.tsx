@@ -1,12 +1,12 @@
 import { Grid, Typography } from '@mui/material';
 import { NextPage } from 'next';
 import { grey } from "@mui/material/colors";
-import { Layout } from "../components/layout"
+import { Layout } from "../../components/layout"
 // import { useProjects } from "../../hooks";
-import { Project } from "../components/projects"
+import { Project } from "../../components/projects"
 
 
-export const IndexPage: NextPage = () => {
+export const Projects: NextPage = () => {
 
    // const { projects } = useProjects();
    return (
@@ -28,6 +28,3 @@ export const IndexPage: NextPage = () => {
         </Layout>
     )
 }
-
-
-export default IndexPage
