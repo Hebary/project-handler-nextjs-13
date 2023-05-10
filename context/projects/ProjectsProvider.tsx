@@ -2,11 +2,12 @@ import { useReducer, useEffect } from 'react';
 import { ProjectsContext, projectsReducer } from './';
 import { pmApi } from '../../config';
 import { Project, Task, User } from '../../interfaces';
+import Cookies from 'js-cookie';
 
 // import { io, Socket } from 'socket.io-client'
 // let socket : Socket;
 interface Props {
-   children: JSX.Element | JSX.Element[];
+   children: React.ReactNode
 }
 
 export interface ProjectsState {
@@ -31,7 +32,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
     useEffect(() => {
         const getUserProjects = async () => {
             try {
-                const token = localStorage.getItem('token');
+                const token = Cookies.get('token');
                 if(!token) return;
                 const config = {
                     headers: {
@@ -39,10 +40,8 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                         'Authorization': `Bearer ${token}`
                     }
                 }
-                const { data } = await pmApi.get<Project[]>('/api/projects', config);
-                
-                dispatch({type: '[PROJECTS]-SET_PROJECTS', payload: data});
-            
+                const { data } = await pmApi.get<Project[]>('/projects', config);
+                dispatch({type: '[PROJECTS]-LOAD_PROJECTS', payload: data});
             } catch( error) {
                 console.log({error});
             }
@@ -59,7 +58,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
 
     const updateProjectsInState = async () => {
         try {
-            const token = localStorage.getItem('token');
+            const token = Cookies.get('token');
             if(!token) return;
             const config = {
                 headers: {
@@ -67,18 +66,18 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                     'Authorization': `Bearer ${token}`
                 }
             }
-            const { data } = await pmApi.get<Project[]>('/api/projects', config);
+            const { data } = await pmApi.get<Project[]>('/projects', config);
             
-            dispatch({type: '[PROJECTS]-SET_PROJECTS', payload: data});
+            dispatch({type: '[PROJECTS]-LOAD_PROJECTS', payload: data});
         
         } catch( error) {
             console.log({error});
         }
     }
 
-    const cleanState = () => {
-        dispatch({ type: '[PROJECTS]-SET_PROJECTS', payload:[]});
-        dispatch({ type: '[PROJECTS]-SET_PROJECT', payload: undefined});
+    const cleanProjectsState = () => {
+        dispatch({ type: '[PROJECTS]-LOAD_PROJECTS', payload:[]});
+        dispatch({ type: '[PROJECTS]-LOAD_PROJECT', payload: undefined});
         dispatch({ type: '[PROJECTS]-SET_TASK', payload: undefined});
         dispatch({ type: '[PROJECTS]-SET_CONTRIBUTOR', payload: undefined});
     }
@@ -86,7 +85,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
     const createProject  = async (project: Project) => {
     
         try {
-            const token = localStorage.getItem('token');
+            const token = Cookies.get('token');
             if(!token) return;
             const config = {
                 headers: {
@@ -95,7 +94,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                 }
             }
 
-            const { data } = await pmApi.post<Project>('/api/projects', project , config);
+            const { data } = await pmApi.post<Project>('/projects', project , config);
             dispatch({type: '[PROJECTS]-ADD_PROJECT', payload: data});
 
         } catch (error) {
@@ -103,28 +102,13 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
         }
     }
 
-    const getProjectById = async (id: string) => {
-        try {
-            const token = localStorage.getItem('token');
-            if(!token) return;
-            const config = {
-                headers: {
-                    'Content-Type' : 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            }
-            const { data } = await pmApi<Project>(`/api/projects/${id}`, config);
-            
-            dispatch({ type: '[PROJECTS]-SET_PROJECT', payload: data });
-
-        } catch (error) {
-            console.log({error});
-        }
+    const setProjectToState = async (project: Project) => {
+        dispatch({ type: '[PROJECTS]-LOAD_PROJECT', payload: project });
     }
 
     const updateProject = async (project: Project) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = Cookies.get('token');
             if(!token) return;
             const config = {
                 headers: {
@@ -132,10 +116,10 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                     'Authorization': `Bearer ${token}`
                 }
             }
-            const { data } = await pmApi.put<Project>(`/api/projects/${state.project?._id}`, project , config);
+            const { data } = await pmApi.put<Project>(`/projects/${state.project?._id}`, project , config);
             dispatch({ type: '[PROJECTS]-UPDATE_PROJECT', payload: data });
             //clean the state of previous project
-            dispatch({ type: '[PROJECTS]-SET_PROJECT', payload: Projects_INITIAL_STATE.project });
+            dispatch({ type: '[PROJECTS]-LOAD_PROJECT', payload: Projects_INITIAL_STATE.project });
         } catch (error) {
             console.log(error);
         }
@@ -143,7 +127,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
 
     const deleteProject = async (id: string) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = Cookies.get('token');
             if(!token) return;
             const config = {
                 headers: {
@@ -151,10 +135,10 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                     'Authorization': `Bearer ${token}`
                 }
             }
-            const { data } = await pmApi.delete<Project>(`/api/projects/${id}`, config);
+            const { data } = await pmApi.delete<Project>(`/projects/${id}`, config);
             console.log(data);
             dispatch({ type: '[PROJECTS]-DELETE_PROJECT', payload: id });
-            dispatch({ type: '[PROJECTS]-SET_PROJECT', payload: Projects_INITIAL_STATE.project });
+            dispatch({ type: '[PROJECTS]-LOAD_PROJECT', payload: Projects_INITIAL_STATE.project });
         } catch (error) {
             console.log({error});
         }
@@ -162,7 +146,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
 
     const createNewTask = async (task: Task) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = Cookies.get('token');
             if(!token) return;
             const config = {
                 headers: {
@@ -170,7 +154,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                     'Authorization': `Bearer ${token}`
                 }
             }
-            const { data } = await pmApi.post<Task>(`/api/task`, task, config);
+            const { data } = await pmApi.post<Task>(`/task`, task, config);
             
             //SOCKET-IO
             // socket.emit('add task', data);
@@ -183,7 +167,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
 
     const getTaskById = async (id: string) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = Cookies.get('token');
             if(!token) return;
             const config = {
                 headers: {
@@ -191,7 +175,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                     'Authorization': `Bearer ${token}`
                 }
             }
-            const { data } = await pmApi<Task>(`/api/task/${id}`, config);
+            const { data } = await pmApi<Task>(`/task/${id}`, config);
             dispatch({ type: '[PROJECTS]-SET_TASK', payload: data });
         }catch (error) {
             console.log({error});
@@ -200,7 +184,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
 
     const updateTask = async (task: Task) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = Cookies.get('token');
             if(!token) return;
             const config = {
                 headers: {
@@ -208,7 +192,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                     'Authorization': `Bearer ${token}`
                 }
             }
-            const { data } = await pmApi.put<Task>(`/api/task/${state.task?._id}`, task, config);
+            const { data } = await pmApi.put<Task>(`/task/${state.task?._id}`, task, config);
             // socket.emit('update task', data);
         }catch (error) {
             console.log({error});
@@ -218,7 +202,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
 
     const deleteTask = async (task: Task) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = Cookies.get('token');
                 if(!token) return;
                 const config = {
                     headers: {
@@ -237,7 +221,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
 
     const findContributor = async(email: string) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = Cookies.get('token');
             if(!token) return;
             const config = {
                 headers: {
@@ -245,7 +229,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                     'Authorization': `Bearer ${token}`
                 }
             }
-            const { data } = await pmApi.post('/api/projects/contributors', {email}, config);
+            const { data } = await pmApi.post('/projects/contributors', {email}, config);
             dispatch({ type: '[PROJECTS]-SET_CONTRIBUTOR', payload: data });
         } catch (error) {
             console.log(error);
@@ -254,7 +238,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
 
     const addContributor = async(email: string) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = Cookies.get('token');
             if(!token) return;
             const config = {
                 headers: {
@@ -262,7 +246,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                     'Authorization': `Bearer ${token}`
                 }
             }
-            const { data } = await pmApi.post(`/api/projects/contributors/${state.project?._id}`, {email, id: state.project?._id}, config);
+            const { data } = await pmApi.post(`/projects/contributors/${state.project?._id}`, {email, id: state.project?._id}, config);
             console.log(data);
             dispatch({ type: '[PROJECTS]-ADD_CONTRIBUTOR', payload: state.contributor as User });
         } catch (error) {
@@ -272,7 +256,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
 
     const deleteContributor = async(id: string, email: string) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = Cookies.get('token');
             if(!token) return;
             const config = {
                 headers: {
@@ -280,7 +264,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                     'Authorization': `Bearer ${token}`
                 }
             }
-            const { data } = await pmApi.post(`/api/projects/delete-contributor/${state.project?._id}`,{ email}, config);
+            const { data } = await pmApi.post(`/projects/delete-contributor/${state.project?._id}`,{ email}, config);
             console.log(data);
             dispatch({ type: '[PROJECTS]-DELETE_CONTRIBUTOR', payload: id });
             dispatch({ type: '[PROJECTS]-SET_CONTRIBUTOR', payload: Projects_INITIAL_STATE.contributor });
@@ -291,7 +275,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
 
     const changeTaskState = async (id: string) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = Cookies.get('token');
             if(!token) return;
             const config = {
                 headers: {
@@ -299,7 +283,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                     'Authorization': `Bearer ${token}`
                 }
             }
-            const { data } = await pmApi.post<Task>(`/api/task/state/${id}`,{}, config)
+            const { data } = await pmApi.post<Task>(`/task/state/${id}`,{}, config)
             // socket.emit('complete task', data);
 
         } catch (error) {
@@ -313,9 +297,9 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
             return;
         }
         const filteredProjects = state.projects.filter(project => project.name.toLowerCase().includes(query.toLowerCase()));
-        dispatch({ type: '[PROJECTS]-SET_PROJECTS', payload: filteredProjects });
+        dispatch({ type: '[PROJECTS]-LOAD_PROJECTS', payload: filteredProjects });
         setTimeout(() => {
-            dispatch({ type: '[PROJECTS]-SET_PROJECTS', payload: projectsAux });
+            dispatch({ type: '[PROJECTS]-LOAD_PROJECTS', payload: projectsAux });
         },15000)
         
     }
@@ -350,7 +334,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                     task: state.task,
                     contributor: state.contributor,
                     createProject,
-                    getProjectById,
+                    setProjectToState,
                     updateProject,
                     deleteProject,
                     createNewTask,
@@ -360,7 +344,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                     findContributor,
                     addContributor,
                     deleteContributor,
-                    cleanState,
+                    cleanProjectsState,
                     updateProjectsInState,
                     changeTaskState,
                     searchProject,

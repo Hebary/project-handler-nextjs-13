@@ -8,7 +8,7 @@ interface ContextProps {
     task: Task | undefined;
     contributor: User | undefined;
     createProject: (project: Project) => void;
-    getProjectById: (id: string) => void;
+    setProjectToState: (project: Project) => void;
     updateProject: (project: Project) => void;
     deleteProject: (id: string) => void;
     createNewTask: (task: Task) => void;
@@ -17,7 +17,7 @@ interface ContextProps {
     getTaskById: (id: string) => void;
     findContributor: (contributorEmail: string) => void;
     addContributor: (contributorEmail: string) => void;
-    cleanState: () => void;
+    cleanProjectsState: () => void;
     deleteContributor: (id: string, email: string) => void;
     updateProjectsInState: () => void;
     changeTaskState: (id: string) => void;

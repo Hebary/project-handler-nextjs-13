@@ -1,7 +1,7 @@
 import { Box, Divider, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
 import { AddCircleOutlineRounded, CategoryOutlined, LoginOutlined} from "@mui/icons-material";
 import { useRouter } from "next/router";
-import { useAuth, useUI } from "../../hooks";
+import { useAuth, useProjects, useUI } from "../../hooks";
 
 
 
@@ -10,14 +10,14 @@ export const Sidebar: React.FC = () => {
 
     const { isMenuOpen, toggleMenu } = useUI();
     const { signOut, user } = useAuth();
-    // const { cleanState } = useProjects();
+    const { cleanProjectsState } = useProjects();
     // 
     const router = useRouter();
 
     const onSignOut = () => {
         signOut();
-        // cleanProjectsState();
-        router.push('/login')
+        cleanProjectsState();
+        router.push('/auth/login')
         toggleMenu();
     }
 
@@ -38,10 +38,10 @@ export const Sidebar: React.FC = () => {
             <Box sx={{ padding: 2 }}>
                 <Typography variant='body2' fontWeight={500} textTransform={'capitalize'} className='red-hat-font'>Welcome { user?.name }</Typography>
             </Box>
+            
             <Divider/>
+            
             <List>
-        
-
                 <ListItemButton
                     onClick={ onSignOut }
                     >
@@ -50,7 +50,7 @@ export const Sidebar: React.FC = () => {
                         </ListItemIcon>
                     <ListItemText primary={'Sign Out'} />
                 </ListItemButton>
-
+                 
                 <ListItemButton 
                     sx={{ display: { xs: '', sm: 'none' } }} 
                     onClick={ () => navigateTo('/projects') }
@@ -69,7 +69,6 @@ export const Sidebar: React.FC = () => {
                         </ListItemIcon>
                         <ListItemText primary={'New project'} />
                 </ListItemButton>
-                
             </List>
         </Box>      
         </Drawer>

@@ -31,8 +31,6 @@ export const CreateAccount: NextPage = () => {
             setTimeout(() => setError(false), 1500);
             return;
         }
-
-        await createAccount(name, email, password);
         const destination = query.p?.toString() || '/';
         replace(destination);
     }
@@ -41,7 +39,7 @@ export const CreateAccount: NextPage = () => {
     return (
         <AuthLayout title='Sign In Page'>
           <Box maxWidth={'350px'} className='fadeInUp' mx='auto'>
-              <Typography color='info.main' variant='h3' component='h1' fontWeight={ 300 } sx={{ textAlign:'justify', ml: 2, letterSpacing: 2, textTransform:'capitalize' }}>
+              <Typography color='secondary' variant='h3' component='h1' fontWeight={ 300 } sx={{ textAlign:'justify', ml: 2, letterSpacing: 2, textTransform:'capitalize' }}>
                 Sign Up
               </Typography>
               <Typography  variant='h3' component='h1' sx={{ ml:1, letterSpacing:2, fontWeight:900, textTransform:'capitalize' }}>
@@ -49,12 +47,12 @@ export const CreateAccount: NextPage = () => {
               </Typography>
           </Box>
             <form  className='fadeInUp' onSubmit={ handleSubmit(onSignUp) }>
-                <Grid sx={{ maxWidth:'350px', mx:'auto', p:4, borderRadius:5, boxShadow:'0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2)', mt:2 }}>
+                <Grid sx={{ maxWidth:'350px', mx:'auto', p:4, borderRadius:'0 0 15px 15px', boxShadow:'0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2)', mt:2 }}>
                       <Grid container spacing={ 3 }>
                         
                         <Grid item xs={12}>    
                             <Chip
-                                label={message}
+                                label={message || 'User already exists'}
                                 color='error'
                                 className='fadeIn'
                                 icon= {<ErrorOutline/>}
@@ -110,7 +108,7 @@ export const CreateAccount: NextPage = () => {
                         </Grid>
 
                         <Grid item xs={ 12 } display='flex' justifyContent='center'>
-                            <Button type='submit' color='info' variant='contained' fullWidth className='circular-btn' size='large' >
+                            <Button type='submit' color='secondary' variant='contained' fullWidth className='circular-btn' size='large' >
                                 Create Account
                             </Button>
                         </Grid>

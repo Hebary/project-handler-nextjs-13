@@ -25,7 +25,6 @@ const theme = createTheme({
         root: {
           backgroundColor: '#2A528A',
           boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
-          height: '65px',
           padding:'0 5px'
         }
       }

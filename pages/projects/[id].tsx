@@ -1,18 +1,26 @@
 import { useEffect, useState } from 'react';
-import Link from 'next/link'
+import { NextPage, GetServerSideProps } from 'next';
 import { useRouter } from 'next/router'
+import Link from 'next/link'
 import { Box, Button, Chip, FormControl, Grid, IconButton, Input, InputLabel, MenuItem, Modal, Select, TextField, Typography } from "@mui/material";
 import { AddCircleOutlineRounded, CheckCircleOutline, EditOutlined, GroupAdd, PersonRemoveOutlined } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
 import { blue, grey } from '@mui/material/colors';
+
 import { Layout } from "../../components/layout"
 import { FullScreenLoading } from '../../components/ui';
-// import { useProjects, useUI, useAdmin } from "../../hooks";
+import { useProjects, useUI, useAdmin } from "../../hooks";
 import { Task } from '../../components/projects';
-import { Task as ITask } from "../../interfaces"
+import { Task as ITask, Project } from "../../interfaces"
+import { pmApi } from '@/config';
+import { ParsedUrlQuery } from 'querystring';
+import { set } from 'mongoose';
 // import { io, Socket } from 'socket.io-client'
-
 // let socket: Socket;
+interface Props {
+    project: Project;
+}
+
 
 type FormData = {
     name        : string;
@@ -23,23 +31,24 @@ type FormData = {
 
 const PRIORITY = ['Low', 'Medium', 'High'];
 
-export const ProjectPage: React.FC = () => {
+const ProjectPage:NextPage<Props> = ({ project }) => {
 
-    // const { getProjectById, project, createNewTask, deleteContributor, addTaskSocket, deleteTaskSocket, updateTaskSocket, changeTaskStateSocket } = useProjects();
-
-    // const { isModalOpen, toggleModal } = useUI();
+    const { setProjectToState, createNewTask, deleteContributor, addTaskSocket, deleteTaskSocket, updateTaskSocket, changeTaskStateSocket } = useProjects();
+    
+    const { isModalOpen, toggleModal } = useUI(); 
     const [loading, setLoading] = useState(false);
     const [alert, setAlert] = useState(false);
     
     const [priority, setPriority] = useState(PRIORITY[0]);
     
-    const router = useRouter();
+    const { push } = useRouter();
+    const admin = useAdmin();
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>();
 
     useEffect(() => {
         setLoading(true);
-        // getProjectById(id as string);
+        setProjectToState(project);
         setTimeout(() => setLoading(false), 1000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -76,23 +85,22 @@ export const ProjectPage: React.FC = () => {
     // })
   
 
-    // const admin = useAdmin();
 
-    // const onSubmitTask = async( data: FormData ) => {
-    //     createNewTask({...data, priority, project: project?._id as string} as ITask);
-    //     setAlert(true);
-    //     reset();
-    //     setTimeout(() => {
-    //         setAlert(false)
-    //         // toggleModal();
-    //         router.push(`/projects/${project?._id}`);
-    //     }, 10);
-    // }
+    const onSubmitTask = async( data: FormData ) => {
+        createNewTask({...data, priority, project: project?._id as string} as ITask);
+        setAlert(true);
+        reset();
+        setTimeout(() => {
+            setAlert(false)
+            toggleModal();
+            push(`/projects/${project?._id}`);
+        }, 10);
+    }
 
-    // const onDeleteContributor = (id: string, email: string) => {
-    //     confirm('Are you sure you want to delete this contributor?') &&
-    //     deleteContributor(id, email);
-    // }
+    const onDeleteContributor = (id: string, email: string) => {
+        confirm('Are you sure you want to delete this contributor?') &&
+        deleteContributor(id, email);
+    }
 
     return (
         <Layout>
@@ -101,49 +109,50 @@ export const ProjectPage: React.FC = () => {
                     ? <FullScreenLoading/> 
                     : <> 
                         <Box display={'flex'} justifyContent={'start'} gap={2} alignItems={'center'} sx={{ borderBottom: '1px solid #ccc', py:2 }} className='fadeInUp' >
-                            {/* <Typography color='info.main' variant='h5' component='h1' sx={{ textAlign:'justify', letterSpacing: 1, fontWeight: 300, textTransform:'capitalize' }}>{project?.name}</Typography> */}
+                            <Typography color='info.main' variant='h5' component='h1' sx={{ textAlign:'justify', letterSpacing: 1, fontWeight: 300, textTransform:'capitalize' }}>{project?.name}</Typography>
                             
-                        {/* { admin &&  */}
-                            {/* <Link href={`/projects/edition/${project?._id}`}> */}
+                        { admin && 
+                            <Link href={`/projects/edit-project`}>
                                 <Button
                                     size='small'
-                                    variant='outlined'
-                                    sx={{ py:0, textTransform:'capitalize', fontWeight:300, fontSize:'15px',':hover':{bgcolor:blue[300], color:'#FFF'} }}
-                                    startIcon={<EditOutlined sx={{ color:'primary.main' }}/> }
+                                    variant='text'
+                                    sx={{ py:0, textTransform:'capitalize', fontWeight:500, fontSize:'15px',':hover':{bgcolor:'secondary.main', color:'#FFF'} }}
+                                    startIcon={<EditOutlined/> }  
                                  >Edit
                                 </Button>
-                            {/* </Link> */}
-                        {/* } */}
+                            </Link>
+                        } 
                         </Box>
                         <Box sx={{display:'flex', alignItems:'center', px:2, justifyContent:'space-between', my:2}} className='fadeInUp' >
                             <Typography variant='h6' component='h2' sx={{ fontWeight:500, textTransform:'capitalize' }}>Tasks</Typography>
-                            {/* { admin &&  */}
-                                <Button variant='outlined' onClick={()=>{}}  sx={{ textTransform:'capitalize', py:0, fontWeight:300 }} endIcon={<AddCircleOutlineRounded/>}>
+                            { admin && 
+                                <Button variant='text' onClick={ toggleModal }  sx={{ ":hover":{bgcolor:'secondary.main', color:'#FFF'},
+                                 textTransform:'capitalize', py:0, fontWeight:500 }} endIcon={<AddCircleOutlineRounded/>}>
                                     Add Task
                                 </Button>
-                            {/* } */}
+                            }
                         </Box>
                         <Box display={'flex'} flexDirection={'column'} className='fadeInUp' >
-                            {/* {
+                            {
                                 project?.tasks.map(task => (
                                     <Task task={task} key={task._id}  />
                                     )
                                 )  
-                            } */}
+                            }
                         </Box>
 
-                        {/* { admin && ( */}
+                        { admin && (
                         <>  
                         
                             <Box sx={{display:'flex', alignItems:'center', px:2, justifyContent:'space-between', my:2}} className='fadeInUp' >
                                 <Typography variant='h6' component='h2' sx={{ fontWeight:500, textTransform:'capitalize' }}>Contributors</Typography>
-                                {/* <Link href={`/projects/new-contributor/${project?._id}`} style={{textDecoration:'none'}}> */}
-                                        <Button variant='outlined' sx={{ textTransform:'capitalize', py:0, fontWeight:300 }} size='small' endIcon={<GroupAdd/>}>
+                                <Link href={`/projects/new-contributor/${project?._id}`} style={{textDecoration:'none'}}>
+                                        <Button variant='text' sx={{ ":hover":{bgcolor:'secondary.main', color:'#FFF'   }, textTransform:'capitalize', py:0, fontWeight:500 }} size='small' endIcon={<GroupAdd/>}>
                                             Add 
                                         </Button>
-                                {/* </Link> */}
+                                </Link>
                             </Box>
-                            {/* {  
+                            {  
                             project?.contributors?.length ? 
                                 project?.contributors?.map(contributor => (   
                                     <Grid key={contributor?._id} 
@@ -161,18 +170,18 @@ export const ProjectPage: React.FC = () => {
                                     </Grid> 
                                 )) 
                                 : <Typography variant='body1' fontWeight={ 500 } sx={{ ml:3, letterSpacing:2, fontWeight:300, textTransform:'capitalize' }}>No contributors yet.</Typography>
-                            } */}
+                            }
                         </>
-                       {/* )} */}
+                       )}
                         <Modal
-                            open={ true }
-                            onClose={ () => {}}
+                            open={ isModalOpen }
+                            onClose={ toggleModal }
                             aria-labelledby="parent-modal-title"
                             aria-describedby="parent-modal-description"
                             sx={{width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center'}}
                             >
                             <Box sx={{  width: 400 }}>
-                            {/* <form id='task-form' onSubmit={handleSubmit(onSubmitTask)}> */}
+                            <form id='task-form' onSubmit={handleSubmit(onSubmitTask)}>
                                 <Box display='flex' flexDirection='column' gap={2} sx={{ width:'100%', bgcolor:'background.paper', p:2, borderRadius:2 }}>
                                     <Box display='flex' alignItems='center' justifyContent={'center'} mt={2} gap={1}>
                                         <Typography id="parent-modal-title" color='info.main' fontWeight={300} textTransform={'capitalize'} textAlign={'center'} variant="h5" component="h2">new</Typography>
@@ -227,37 +236,73 @@ export const ProjectPage: React.FC = () => {
                                     <FormControl fullWidth>
                                       <InputLabel id="demo-simple-select-label">Priority</InputLabel>
                                         <Select
-                                          value={priority}
-                                          onChange={(e) => setPriority(e.target.value)}
-                                          labelId="demo-simple-select-label"
-                                          id="demo-simple-select"
-                                          label="Priority"
+                                            value={priority}
+                                            onChange={(e) => setPriority(e.target.value)}
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            label="Priority"
                                         >
                                             { PRIORITY.map( priority => <MenuItem  key={ priority } value={priority}>{priority}</MenuItem>) }
                                         </Select>
 
                                     </FormControl>
                                     <Input 
-                                            type='date'
-                                            fullWidth
-                                            sx={{my:'2px', py:2, px:1}} 
-                                            {...register('deliveryDate',{
-                                                required: 'Deliver Date is required',
-                                                }   
-                                            )}
-                                            error={!!errors.deliveryDate}
-
+                                        type='date'
+                                        fullWidth
+                                        sx={{my:'2px', py:2, px:1}} 
+                                        {...register('deliveryDate',{
+                                            required: 'Deliver Date is required',
+                                            }   
+                                        )}
+                                        error={!!errors.deliveryDate}
                                     />
                                     <Button type='submit' color='info' variant='contained' fullWidth size='large' >
                                         Add Task
                                     </Button>
                                 </Box>
-                            {/* </form> */}
-                            </Box>
-                        </Modal>
-                    </>
+                            </form>
+                        </Box>
+                    </Modal>
+                </>
             }
-
         </Layout>
     )
 }
+
+// You should use getServerSideProps when:
+// - Only if you need to pre-render a page whose data must be fetched at request time
+
+export const getServerSideProps: GetServerSideProps = async ({ req, params }) => {
+    const { id } = params as { id: string}
+    const { token = "" } = req.cookies;
+    if(!token){ 
+       return {
+          redirect:{
+             destination: '/auth/login',
+             permanent: false
+          }
+       }
+    } 
+    const config = {
+       headers: {
+           'Content-Type' : 'application/json',
+           'Authorization': `Bearer ${token}`
+       }
+    }
+    try {    
+        const { data } = await pmApi.get<Project>(`/projects/${id}`, config); 
+        return{
+            props:{
+                    project: data || []
+                }
+            }
+    } catch (error) {
+        return {  
+                redirect: {
+                    destination: '/projects',
+                    permanent: false
+                }
+            }
+        }
+    }
+export default ProjectPage;

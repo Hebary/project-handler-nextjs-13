@@ -1,33 +1,96 @@
+import { useEffect, useState } from 'react';
+import { GetServerSideProps } from 'next'
 import { Grid, Typography } from '@mui/material';
 import { NextPage } from 'next';
 import { grey } from "@mui/material/colors";
 import { Layout } from "../components/layout"
-// import { useProjects } from "../../hooks";
 import { Project } from "../components/projects"
+import { FullScreenLoading } from '@/components/ui';
+import { pmApi } from '@/config';
+import { Project as IProject} from '@/interfaces';
 
-
-export const IndexPage: NextPage = () => {
-
-   // const { projects } = useProjects();
-   return (
-        <Layout>
-           <Typography variant='h4' sx={{ mt:1, textTransform:'capitalize', fontWeight:300}} className='red-hat-font'>All projects</Typography>
-           <Grid container display='flex' mt={2} flexDirection='column' className='fadeInUp' >
-{/* 
-            {  projects.length ? projects.map( project =>
-                  <Project key={project._id} project={project} />
-               )
-               : 
-               (  
-                  <Grid sx={{ my:1, borderRadius:3, p:3, ml:2, boxShadow:'0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)', cursor:'pointer', ":hover":{ bgcolor:grey[300] }, transition: 'all .3s ease-in-out' }} item xs={12} md={10} >
-                     <Typography variant='body1' sx={{fontWeight:300}} className='red-hat-font'>You don&apos;t have any projects yet</Typography>
-                  </Grid>
-               )
-            } */}
-            </Grid> 
-        </Layout>
-    )
+interface Props {
+   projects: IProject[]
 }
 
+export const IndexPage: NextPage<Props> = ({ projects }) => {
+
+   const [loading, setLoading] = useState(true);
+
+   useEffect(() => {
+      setTimeout(() => setLoading(false), 4000);
+   }, [])
+   
+   return (
+      <Layout>
+               {  
+               loading ? <FullScreenLoading/> : 
+                  <>
+                    <Typography variant='h4' sx={{ mt:1, textTransform:'capitalize', fontWeight:300}} className='red-hat-font'>All projects</Typography>
+                    <Grid container display='flex' mt={2} flexDirection='column' className='fadeInUp' >
+                     {  projects.length ? projects.map( project =>
+                           <Project key={project._id} project={project} />
+                        )
+                        : 
+                        (  
+                           <Grid sx={{ my:1, borderRadius:3, p:3, ml:2, boxShadow:'0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)', cursor:'pointer', ":hover":{ bgcolor:grey[300] }, transition: 'all .3s ease-in-out' }} item xs={12} md={10} >
+                              <Typography variant='body1' sx={{fontWeight:300}} className='red-hat-font'>You don&apos;t have any projects yet</Typography>
+                           </Grid>
+                        )
+                     }
+                     </Grid> 
+                  </>
+               }
+      </Layout>
+   )
+}
+
+// You should use getServerSideProps when:
+// - Only if you need to pre-render a page whose data must be fetched at request time
+
+export const getServerSideProps: GetServerSideProps = async ({req}) => {
+   const { token = "" } = req.cookies;
+   if(!token){ 
+      return {
+         redirect:{
+            destination: '/auth/login',
+            permanent: false
+         }
+      }
+   } 
+
+   const config = {
+      headers: {
+          'Content-Type' : 'application/json',
+          'Authorization': `Bearer ${token}`
+      }
+   }
+
+   try {
+      const { data } = await pmApi.get<IProject[]>('/projects', config); 
+      const projects = data;
+      return {
+         props: {
+            projects
+         }
+      }
+   } catch(err) {
+      if(err){
+         return {
+            redirect:{
+               destination: '/projects',
+               permanent: false
+            }
+         }
+      }
+   }
+
+   return {
+      redirect: {
+         destination: '/projects',
+         permanent: false
+      }
+   }
+}
 
 export default IndexPage

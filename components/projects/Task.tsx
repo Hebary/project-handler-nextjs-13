@@ -4,6 +4,7 @@ import {  green, orange, blue } from "@mui/material/colors"
 import { CheckCircleOutline, EditOutlined, RuleRounded } from "@mui/icons-material"
 // import { useProjects } from "../../hooks"
 import { Task as ITask } from "../../interfaces"
+import { useAdmin } from '@/hooks'
 // import { useAdmin } from '../../hooks/useAdmin';
 
 
@@ -15,7 +16,7 @@ interface Props {
 export const Task: React.FC<Props> = ({ task, showEdit = false }) => {
 
     // const { changeTaskState } = useProjects();
-    // const admin = useAdmin();
+    const admin = useAdmin();
 
     const onChangeTaskState = () => {
         // changeTaskState(task?._id as string);
@@ -40,13 +41,13 @@ export const Task: React.FC<Props> = ({ task, showEdit = false }) => {
                                 </Box>
                         } 
                         </Box>                
-                    {/* { admin && showEdit===false && */}
+                    { admin && showEdit===false &&
                         <Link href={`task/${task?._id}`} style={{ textDecoration:'none', fontSize:17, color:'#8EA7E9', fontWeight:300, textTransform:'capitalize'}} >
                             <Button className='fadeInUp red-hat-font' size='small' sx={{textTransform:'capitalize'}}endIcon={<EditOutlined />} >
                                 Edit
                             </Button>
                         </Link>
-                    {/* } */}
+                    } 
                 </Box>
             </Grid>
         </>

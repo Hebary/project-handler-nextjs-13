@@ -15,7 +15,7 @@ type FormData = {
     deliveryDate: string;
 }
 
-export const EditProject : NextPage = () => {
+const EditProject : NextPage = () => {
 
     // const { project, updateProject, deleteProject } = useProjects();
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
@@ -149,3 +149,4 @@ export const EditProject : NextPage = () => {
     )
 }
 
+export default EditProject
