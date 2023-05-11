@@ -44,7 +44,6 @@ const ProjectPage:NextPage = () => {
 
     useEffect(() => {
         setLoading(true);
-        // console.log(router.query.id)
         getProjectById(router.query.id as string);
         setTimeout(() => setLoading(false), 1000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
