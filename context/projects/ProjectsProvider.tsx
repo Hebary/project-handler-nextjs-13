@@ -104,8 +104,11 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
         }
     }
 
-    const setProjectToState = async (project: Project) => {
-        dispatch({ type: '[PROJECTS]-LOAD_PROJECT', payload: project });
+    // const setProjectToState = async (project: Project) => {
+    //     dispatch({ type: '[PROJECTS]-LOAD_PROJECT', payload: project });
+    // }
+    const setTaskToState = async (task: Task) => {
+        dispatch({ type: '[PROJECTS]-SET_TASK', payload: task });
     }
 
     const updateProject = async (project: Project) => {
@@ -121,7 +124,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
             const { data } = await pmApi.put<Project>(`/projects/${state.project?._id}`, project , config);
             dispatch({ type: '[PROJECTS]-UPDATE_PROJECT', payload: data });
         } catch (error) {
-            console.log(error);
+            console.log({error});
         }
     }
 
@@ -164,22 +167,6 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
         }
     }
 
-    const getTaskById = async (id: string) => {
-        try {
-            const token = Cookies.get('token');
-            if(!token) return;
-            const config = {
-                headers: {
-                    'Content-Type' : 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            }
-            const { data } = await pmApi<Task>(`/task/${id}`, config);
-            dispatch({ type: '[PROJECTS]-SET_TASK', payload: data });
-        }catch (error) {
-            console.log({error});
-        }
-    }
 
     const updateTask = async (task: Task) => {
         try {
@@ -198,6 +185,22 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
         }
 
     }
+    const getProjectById = async (id: string) => {
+        const config = {
+            headers: {
+                'Content-Type' : 'application/json',
+                'authorization': `Bearer ${Cookies.get('token')}`
+            }
+        }
+    
+    try{
+        const { data } = await pmApi.get<Project>(`/projects/${id}`, config);
+        dispatch({ type: '[PROJECTS]-LOAD_PROJECT', payload: data });
+    } catch (error) {
+        console.log({error});
+        }
+    }
+
 
     const deleteTask = async (task: Task) => {
         try {
@@ -231,7 +234,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
             const { data } = await pmApi.post('/projects/contributors', {email}, config);
             dispatch({ type: '[PROJECTS]-SET_CONTRIBUTOR', payload: data });
         } catch (error) {
-            console.log(error);
+            console.log({error});
         }
     }
 
@@ -253,7 +256,8 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
         }
     }
 
-    const deleteContributor = async(id: string, email: string) => {
+    const deleteContributor = async(id: string) => {
+       
         try {
             const token = Cookies.get('token');
             if(!token) return;
@@ -263,12 +267,12 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                     'Authorization': `Bearer ${token}`
                 }
             }
-            const { data } = await pmApi.post(`/projects/delete-contributor/${state.project?._id}`,{ email}, config);
-            console.log(data);
+            const { data } = await pmApi.post(`/projects/delete-contributor/${state.project?._id}`,{ id }, config);
+            console.log(data)
             dispatch({ type: '[PROJECTS]-DELETE_CONTRIBUTOR', payload: id });
-            dispatch({ type: '[PROJECTS]-SET_CONTRIBUTOR', payload: undefined });
+            console.log(state.project?.contributors)
         } catch (error) {
-            console.log(error);
+            console.log({error});
         }
     }
 
@@ -333,14 +337,14 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                     task: state.task,
                     contributor: state.contributor,
                     createProject,
-                    setProjectToState,
+                    setTaskToState,
                     loadProjectsInState,
+                    getProjectById,
                     updateProject,
                     deleteProject,
                     createNewTask,
                     updateTask,
                     deleteTask,
-                    getTaskById,
                     findContributor,
                     addContributor,
                     deleteContributor,

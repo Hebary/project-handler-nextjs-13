@@ -42,7 +42,7 @@ export const Task: React.FC<Props> = ({ task, showEdit = false }) => {
                         } 
                         </Box>                
                     { admin && showEdit===false &&
-                        <Link href={`task/${task?._id}`} style={{ textDecoration:'none', fontSize:17, color:'#8EA7E9', fontWeight:300, textTransform:'capitalize'}} >
+                        <Link href={`/projects/task/${task?._id}`} style={{ textDecoration:'none', fontSize:17, color:'#8EA7E9', fontWeight:300, textTransform:'capitalize'}} >
                             <Button className='fadeInUp red-hat-font' size='small' sx={{textTransform:'capitalize'}}endIcon={<EditOutlined />} >
                                 Edit
                             </Button>

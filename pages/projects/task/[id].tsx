@@ -1,15 +1,17 @@
+import { NextPage, GetServerSideProps } from 'next';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router'
 import { Box, Button, Chip, FormControl, Grid, Input, InputLabel, MenuItem, Modal, Select, TextField, Typography } from "@mui/material";
-import {  CheckCircleOutline, DeleteForeverOutlined } from '@mui/icons-material';
+import { CheckCircleOutline, DeleteForeverOutlined } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
-// import { useProjects, useUI } from "../../hooks";
-import { Layout } from "../../components/layout"
-import { FullScreenLoading } from '../../components/ui';
-import { Task } from '../../components/projects';
-import { Task as ITask} from '../../interfaces';
 import { red } from '@mui/material/colors';
-import { useUI } from '@/hooks';
+
+import { useProjects, useUI } from "../../../hooks";
+import { Layout } from "../../../components/layout"
+import { FullScreenLoading } from '../../../components/ui';
+import { Task } from '../../../components/projects';
+import { Task as ITask} from '../../../interfaces';
+import { pmApi } from '@/config';
 
 type FormData = {
     name        : string;
@@ -20,43 +22,45 @@ type FormData = {
 
 const PRIORITY = ['Low', 'Medium', 'High'];
 
-export const ProjectEditTask: React.FC = () => {
 
-    // const { project, getTaskById, task, updateTask, deleteTask } = useProjects();
+interface Props {
+    task: ITask;
+ }
+export const ProjectEditTask: NextPage<Props> = ({ task }) => {
+
+    const { project, updateTask, deleteTask, setTaskToState } = useProjects();
 
     const { isModalOpen, toggleModal } = useUI();
     const [ loading, setLoading ] = useState(false);
     const [ alert, setAlert ] = useState(false);
     
-    const  { pathname } = useRouter()
-    const taskId = pathname.split('/')[3];
-    const [priority, setPriority] = useState(PRIORITY[0]);
+    const  router = useRouter()
+    const [priority, setPriority] = useState(task?.priority);
     const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
-        // defaultValues: {
-        //     name: task?.name,
-        //     description: task?.description,
-        //     deliveryDate: task?.deliveryDate,
-        //     priority: PRIORITY[0]
-        // }
+        defaultValues: {
+            name: task?.name,
+            description: task?.description,
+            deliveryDate: task?.deliveryDate,
+            priority: task?.priority
+        }
     });
 
     useEffect(() => {
         setLoading(true);
-        // getTaskById(taskId as string);
         setTimeout(() => setLoading(false), 2000);
+        setTaskToState(task);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    const router = useRouter();
     
     const onSubmitTask = async( data: FormData ) => {
-        // updateTask({...data, priority, project: project?._id as string} as ITask);
+        updateTask({...data, priority, project: project?._id as string} as ITask);
         setAlert(true);
         setTimeout(() => {
             setAlert(false)
             reset();
-            // toggleModal();
-            // router.push(`/projects/${project?._id}`);
+            toggleModal();
+            router.push(`/projects/${project?._id}`);
         }, 1500);
     }
 
@@ -72,17 +76,17 @@ export const ProjectEditTask: React.FC = () => {
                     ? <FullScreenLoading/> 
                     : <> 
                         <Box display={'flex'} justifyContent={'start'} gap={1} alignItems={'center'} sx={{ borderBottom: '1px solid #ccc', py:2 }} className='fadeInUp' >
-                            {/* <Typography color='info.main' variant='h5' component='h1' sx={{ textAlign:'justify', letterSpacing: 2, fontWeight: 300, textTransform:'capitalize' }}>{project?.name}</Typography> */}
+                            <Typography color='info.main' variant='h5' component='h1' sx={{ textAlign:'justify', letterSpacing: 2, fontWeight: 300, textTransform:'capitalize' }}>{project?.name}</Typography>
                         </Box>
                         <Box sx={{display:'flex', alignItems:'center', px:2, justifyContent:'space-between', my:2}} className='fadeInUp' >
-                            {/* <Typography variant='h6' component='h2' sx={{ fontWeight:300, textTransform:'capitalize' }}><strong>Task:</strong> { task?.name }</Typography> */}
+                            <Typography variant='h6' component='h2' sx={{ fontWeight:300, textTransform:'capitalize' }}><strong>Task:</strong> { project?.name }</Typography>
                             <Button size ='small' startIcon={<DeleteForeverOutlined/>} onClick={onDeleteTask} variant='outlined' sx={{":hover":{color:'#FFF', bgcolor:red[700]}, fontWeight:300, textTransform:'capitalize' }}>
                                 Delete
                             </Button>
                         </Box>
-                        {/* <Box display={'flex'} flexDirection={'column'} onClick={ toggleModal } className='fadeInUp' >
-                            <Task task={task as ITask} key={task?._id} showEdit={true} />
-                        </Box> */}
+                        <Box display={'flex'} flexDirection={'column'} onClick={ toggleModal } className='fadeInUp' >
+                            <Task task={task as ITask} key={task?._id} showEdit={ true } />
+                        </Box>
 
                         <Modal
                             open={ isModalOpen}
@@ -180,4 +184,35 @@ export const ProjectEditTask: React.FC = () => {
 
         </Layout>
     )
+}
+
+export default ProjectEditTask;
+// You should use getServerSideProps when:
+// - Only if you need to pre-render a page whose data must be fetched at request time
+
+export const getServerSideProps: GetServerSideProps = async ({ req, params }) => {
+    const { token = "" } = req.cookies;
+    if(!token) {
+        return {
+            redirect: {
+                destination: '/auth/login',
+                permanent: false
+            }
+        }
+    }
+    const id = params?.id as string;
+    
+    const config = {
+        headers: {
+            "content": "application/json",
+            "authorization": `Bearer ${token}`
+            }
+        }
+    
+    const { data } = await pmApi.get<ITask>(`/task/${id}`, config) // your fetch function here 
+    return {
+        props: {
+            task: data
+        }
+    }
 }

@@ -8,18 +8,18 @@ interface ContextProps {
     task                  : Task | undefined;
     contributor           : User | undefined;
     createProject         : (project: Project) => void;
-    setProjectToState     : (project: Project) => void;
+    getProjectById        : (id: string) => void;
+    setTaskToState        : (task: Task) => void;
     loadProjectsInState   : () => void;
     updateProject         : (project: Project) => void;
     deleteProject         : (id: string) => void;
     createNewTask         : (task: Task) => void;
     updateTask            : (task: Task) => void;
     deleteTask            : (task: Task) => void;
-    getTaskById           : (id: string) => void;
     findContributor       : (contributorEmail: string) => void;
     addContributor        : (contributorEmail: string) => void;
+    deleteContributor     : (id: string) => void;
     cleanProjectsState    : () => void;
-    deleteContributor     : (id: string, email: string) => void;
     changeTaskState       : (id: string) => void;
     searchProject         : (query: string) => void;
     //socket. 

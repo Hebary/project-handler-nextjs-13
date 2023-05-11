@@ -60,11 +60,13 @@ export const projectsReducer = (state: ProjectsState, action: ProjectsActionType
     case '[PROJECTS]-UPDATE_TASK':
       return {
         ...state,
+        task: undefined,
         project: state.project && { ...state.project, tasks: state.project?.tasks.map((task: Task) => task?._id === action.payload._id ? action.payload : task)}
       }
     case '[PROJECTS]-DELETE_TASK':
       return{
         ...state,
+        task: undefined,
         project: state.project && { ...state.project, tasks: state.project?.tasks.filter(task => task?._id !== action.payload)}
       }
     case '[PROJECTS]-SET_CONTRIBUTOR':
@@ -75,17 +77,18 @@ export const projectsReducer = (state: ProjectsState, action: ProjectsActionType
     case '[PROJECTS]-ADD_CONTRIBUTOR':
       return{
         ...state,
-        project: state.project && { ...state.project, contributors: [...state.project.contributors, action.payload] }
+        project: state.project && { ...state.project, contributors: [...state.project.contributors, action.payload] },
+        contributor: undefined
       }
     case '[PROJECTS]-DELETE_CONTRIBUTOR':
       return{
         ...state,
-        project: state.project && { ...state.project, contributors: state.project?.contributors.filter(c => c?._id !== action.payload) }
+        project: state.project && { ...state.project, contributors: state.project?.contributors.filter(contributor => contributor?._id !== action.payload) }, 
       }
     case '[PROJECTS]-CHANGE_TASK_STATE':
       return {
         ...state,
-        project:state.project && { ...state.project, tasks: state.project?.tasks.map((task: Task) => task?._id === action.payload._id ? action.payload : task)}
+        project: state.project && { ...state.project, tasks: state.project?.tasks.map((task: Task) => task?._id === action.payload._id ? action.payload : task)}
       }
     default: 
       return state; 

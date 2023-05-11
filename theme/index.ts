@@ -23,7 +23,7 @@ const theme = createTheme({
     
       styleOverrides: {
         root: {
-          backgroundColor: '#2A528A',
+          backgroundColor: grey[800],
           boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
           padding:'0 5px'
         }

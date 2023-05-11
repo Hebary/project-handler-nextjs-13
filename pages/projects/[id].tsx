@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Box, Button, Chip, FormControl, Grid, IconButton, Input, InputLabel, MenuItem, Modal, Select, TextField, Typography } from "@mui/material";
 import { AddCircleOutlineRounded, CheckCircleOutline, EditOutlined, GroupAdd, PersonRemoveOutlined } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
-import { blue, grey } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 
 import { Layout } from "../../components/layout"
 import { FullScreenLoading } from '../../components/ui';
@@ -13,13 +13,9 @@ import { useProjects, useUI, useAdmin } from "../../hooks";
 import { Task } from '../../components/projects';
 import { Task as ITask, Project } from "../../interfaces"
 import { pmApi } from '@/config';
-import { ParsedUrlQuery } from 'querystring';
-import { set } from 'mongoose';
 // import { io, Socket } from 'socket.io-client'
 // let socket: Socket;
-interface Props {
-    project: Project;
-}
+
 
 
 type FormData = {
@@ -31,9 +27,9 @@ type FormData = {
 
 const PRIORITY = ['Low', 'Medium', 'High'];
 
-const ProjectPage:NextPage<Props> = ({ project }) => {
+const ProjectPage:NextPage = () => {
 
-    const { setProjectToState, createNewTask, deleteContributor, addTaskSocket, deleteTaskSocket, updateTaskSocket, changeTaskStateSocket } = useProjects();
+    const { project, createNewTask, deleteContributor, addTaskSocket, deleteTaskSocket, updateTaskSocket, changeTaskStateSocket, getProjectById } = useProjects();
     
     const { isModalOpen, toggleModal } = useUI(); 
     const [loading, setLoading] = useState(false);
@@ -41,14 +37,15 @@ const ProjectPage:NextPage<Props> = ({ project }) => {
     
     const [priority, setPriority] = useState(PRIORITY[0]);
     
-    const { push } = useRouter();
+    const router = useRouter();
     const admin = useAdmin();
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>();
 
     useEffect(() => {
         setLoading(true);
-        setProjectToState(project);
+        // console.log(router.query.id)
+        getProjectById(router.query.id as string);
         setTimeout(() => setLoading(false), 1000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -93,13 +90,13 @@ const ProjectPage:NextPage<Props> = ({ project }) => {
         setTimeout(() => {
             setAlert(false)
             toggleModal();
-            push(`/projects/${project?._id}`);
+            router.push(`/projects/${project?._id}`);
         }, 10);
     }
 
-    const onDeleteContributor = (id: string, email: string) => {
+    const onDeleteContributor = async (id: string) => {
         confirm('Are you sure you want to delete this contributor?') &&
-        deleteContributor(id, email);
+        deleteContributor(id);
     }
 
     return (
@@ -162,7 +159,7 @@ const ProjectPage:NextPage<Props> = ({ project }) => {
                                         <Typography color='primary.main' variant='body2' fontWeight={ 500 } sx={{ mr:1, letterSpacing:1, fontWeight:300, textTransform:'capitalize' }}>{contributor?.email}</Typography>
                                         { admin &&
                                             <IconButton
-                                                    onClick={ () => onDeleteContributor(contributor?._id as string, contributor?.email) }
+                                                    onClick={ () => onDeleteContributor(contributor?._id as string) }
                                                 >
                                                 <PersonRemoveOutlined sx={{color:'primary.main'}} />    
                                             </IconButton>
@@ -272,38 +269,37 @@ const ProjectPage:NextPage<Props> = ({ project }) => {
 // You should use getServerSideProps when:
 // - Only if you need to pre-render a page whose data must be fetched at request time
 
-export const getServerSideProps: GetServerSideProps = async ({ req, params }) => {
-    const { id } = params as { id: string}
-    const { token = "" } = req.cookies;
-    if(!token){ 
-       return {
-          redirect:{
-             destination: '/auth/login',
-             permanent: false
-          }
-       }
-    } 
-    const config = {
-       headers: {
-           'Content-Type' : 'application/json',
-           'Authorization': `Bearer ${token}`
-       }
-    }
-    try {    
-        const { data } = await pmApi.get<Project>(`/projects/${id}`, config); 
-        return{
-            props:{
-                    project: data || []
-                },
-                
-            }
-    } catch (error) {
-        return {  
-                redirect: {
-                    destination: '/projects',
-                    permanent: false,
-                },
-            }
-        }
-    }
+// export const getServerSideProps: GetServerSideProps = async ({ req, params }) => {
+//     const { id } = params as { id: string}
+//     const { token = "" } = req.cookies;
+//     if(!token){ 
+//        return {
+//           redirect:{
+//              destination: '/auth/login',
+//              permanent: false
+//           }
+//        }
+//     } 
+//     const config = {
+//        headers: {
+//            'Content-Type' : 'application/json',
+//            'Authorization': `Bearer ${token}`
+//        }
+//     }
+//     try {    
+//         const { data } = await pmApi.get<Project>(`/projects/${id}`, config); 
+//         return{
+//             props:{
+//                     project: data || []
+//                 }
+//             }
+//     } catch (error) {
+//         return {  
+//                 redirect: {
+//                     destination: '/',
+//                     permanent: false,
+//                 }
+//             }
+//         }
+//     }
 export default ProjectPage;
