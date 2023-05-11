@@ -54,7 +54,7 @@ export const Navbar: React.FC = () => {
                 isSearchVisible ?
                     (
                         <Input
-                            sx={{ display: { xs: 'none', sm: 'flex'}, color:'#E9D498' }}
+                            sx={{ display: {sm: 'flex'}, width:'110px', color:'#E9D498' }}
                             className='fadeIn'
                             type='text'
                             autoFocus   
@@ -77,7 +77,7 @@ export const Navbar: React.FC = () => {
                     (
                         <IconButton
                             onClick={ ()=> setIsSearchVisible(!isSearchVisible) }
-                            sx={{ display: { xs: 'none', sm: 'flex' }, color:'#E9D498' }}
+                            sx={{ display: { sm: 'flex' }, color:'#E9D498' }}
                             className='fadeIn'
 
                         >
