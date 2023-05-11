@@ -4,8 +4,9 @@ import { useForm } from 'react-hook-form';
 import { Box, Button, Chip, Grid, TextField, Typography, Input } from '@mui/material';
 import { CheckCircleOutline } from '@mui/icons-material';
 import { Layout } from '../../components/layout';
-// import { useProjects } from '../../hooks';
+import { useProjects } from '../../hooks';
 import { Project } from '../../interfaces';
+import { NextPage } from 'next';
 
 type FormData = {
     name       : string;
@@ -14,29 +15,30 @@ type FormData = {
     deliveryDate: string;
 }
 
-export const NewProject: React.FC = () => {
-    // const { createProject } = useProjects();
+const NewProject: NextPage = () => {
+    const { createProject } = useProjects();
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
     const [ alert, setAlert ] = useState(false);
     
     const router = useRouter();
 
-    // const onCreateProject = async (projectData: FormData) => {
-        // createProject(projectData as Project);
-        // setAlert(true);
+    const onCreateProject = async (projectData: FormData) => {
+        createProject(projectData as Project);
+        setAlert(true);
 
         setTimeout(() => {
             setAlert(false)
-            router.push('/projects');
+            router.push('/');
         }, 1500);
+    }
 
     return (
         <Layout title='New Project'>
-            <Box maxWidth={'350px'} display={'flex'} className='fadeInUp' m='20px auto 0'>
-                <Typography color='info.main' variant='h3' component='h1' fontWeight={ 500 } sx={{ mr:1, letterSpacing:2, fontWeight:300, textTransform:'capitalize' }}>New</Typography>
-                <Typography color='primary.main' variant='h3' component='h1' fontWeight={ 500 } sx={{ ml:1, letterSpacing:2, fontWeight:900, textTransform:'capitalize' }}>Project</Typography>
+            <Box maxWidth={'330px'} display={'flex'} flexWrap={'wrap'} className='fadeInUp' m='20px auto 0'>
+                <Typography color='info.main' variant='h3' component='h1' fontWeight={ 500 } sx={{ letterSpacing:1, fontWeight:300, textTransform:'capitalize' }}>New</Typography>
+                <Typography color='primary.main' variant='h3' component='h1' fontWeight={ 500 } sx={{ ml:1, letterSpacing:1, fontWeight:900, textTransform:'capitalize' }}>Project</Typography>
             </Box>
-            {/* <form  className='fadeInUp' onSubmit={ handleSubmit(onCreateProject) }> */}
+            <form  className='fadeInUp' onSubmit={ handleSubmit(onCreateProject) }>
                 <Grid sx={{ maxWidth:'420px', mx:'auto', p:4, borderRadius:5, boxShadow:'0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2)', mt:1 }}>
                       <Grid container spacing={ 3 }>
                             <Grid item xs={ 12 }>
@@ -119,10 +121,9 @@ export const NewProject: React.FC = () => {
                             </Grid>
                         </Grid>
                     </Grid>
-            {/* </form> */}
+            </form>
         </Layout>
     )
 }
-
 
 export default NewProject;

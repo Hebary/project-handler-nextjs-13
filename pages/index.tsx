@@ -1,23 +1,15 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router'
 import { Grid, Typography } from '@mui/material';
 import { NextPage } from 'next';
 import { grey } from "@mui/material/colors";
 import { Layout } from "../components/layout"
 import { Project } from "../components/projects"
 import { FullScreenLoading } from '@/components/ui';
-import { pmApi } from '@/config';
-import { Project as IProject} from '@/interfaces';
-import { useAuth, useProjects } from '@/hooks';
-
-// interface Props {
-//    projects: IProject[]
-// }
+import { useProjects } from '@/hooks';
 
 export const IndexPage: NextPage = () => {
 
    const { projects } = useProjects();
-   // const { isLogged, user } = useAuth();
    const [loading, setLoading] = useState(true);
 
    useEffect(() => {

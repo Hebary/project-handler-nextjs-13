@@ -53,7 +53,7 @@ export const Sidebar: React.FC = () => {
                  
                 <ListItemButton 
                     sx={{ display: { xs: '', sm: 'none' } }} 
-                    onClick={ () => navigateTo('/projects') }
+                    onClick={ () => {navigateTo('/'); toggleMenu(); }}
                 >
                     <ListItemIcon>
                         <CategoryOutlined/>
@@ -62,7 +62,7 @@ export const Sidebar: React.FC = () => {
                 </ListItemButton>
             
                 <ListItemButton
-                        onClick={ () => { navigateTo('/new-project'); toggleMenu(); }}
+                        onClick={ () => { navigateTo('/projects/new-project'); toggleMenu(); }}
                     >
                         <ListItemIcon>
                             <AddCircleOutlineRounded/>

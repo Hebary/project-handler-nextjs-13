@@ -57,9 +57,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
     }, []);
     
 
-    const setProjects = async (projects: Project[]) => {
-        
-    }
+ 
 
     const loadProjectsInState = async () => {
         try {
@@ -268,7 +266,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
             const { data } = await pmApi.post(`/projects/delete-contributor/${state.project?._id}`,{ email}, config);
             console.log(data);
             dispatch({ type: '[PROJECTS]-DELETE_CONTRIBUTOR', payload: id });
-            dispatch({ type: '[PROJECTS]-SET_CONTRIBUTOR', payload: PROJECTS_INITIAL_STATE.contributor });
+            dispatch({ type: '[PROJECTS]-SET_CONTRIBUTOR', payload: undefined });
         } catch (error) {
             console.log(error);
         }
@@ -314,12 +312,12 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
 
     const deleteTaskSocket = (task: Task) => {
             dispatch({ type: '[PROJECTS]-DELETE_TASK', payload: task?._id as string});
-            dispatch({ type: '[PROJECTS]-SET_TASK', payload: PROJECTS_INITIAL_STATE.task });
+            dispatch({ type: '[PROJECTS]-SET_TASK', payload: undefined });
     }
 
     const updateTaskSocket = (task: Task) => {
         dispatch({ type: '[PROJECTS]-UPDATE_TASK', payload: task });
-        dispatch({ type: '[PROJECTS]-SET_TASK', payload: PROJECTS_INITIAL_STATE.task });
+        dispatch({ type: '[PROJECTS]-SET_TASK', payload: undefined });
     }
 
     const changeTaskStateSocket = (task: Task) => {
@@ -337,7 +335,6 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                     createProject,
                     setProjectToState,
                     loadProjectsInState,
-                    setProjects,
                     updateProject,
                     deleteProject,
                     createNewTask,
