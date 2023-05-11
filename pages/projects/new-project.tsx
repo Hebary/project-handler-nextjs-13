@@ -125,3 +125,4 @@ export const NewProject: React.FC = () => {
 }
 
 
+export default NewProject;

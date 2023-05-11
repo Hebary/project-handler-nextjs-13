@@ -31,18 +31,23 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
     
     const router = useRouter();
     // Check if user was already auth
-    useEffect(() => {
+    useEffect( () => {
         checkToken();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
     const checkToken = async () => {
-
         if( !Cookies.get('token') ) return;
+        const token = Cookies.get('token');
 
+        const config = {
+            headers: {
+                "content": "application/json",
+                "authorization": `Bearer ${token}`
+            }
+        }
         try {
-            const { data } = await pmApi.get<User>('/users/profile');
-            
+            const { data } = await pmApi.get<User>('/users/profile', config);
             
             Cookies.set('token', data.token);
                     dispatch({
@@ -50,8 +55,9 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
                         payload: data
                     })
             router.push('/');
-        } catch (error) {
-            Cookies.remove('token');
+        } catch (error: any) {
+            console.log({error: error.response?.data.msg  || 'Something went wrong'})
+            Cookies.remove('token')
         }
     }
 
@@ -108,7 +114,6 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
 
     const signOut = () => {
         Cookies.remove('token');
-        console.log('signOut', AUTH_INITIAL_STATE.user);
         dispatch({ type: '[AUTH]-LOGOUT', payload: AUTH_INITIAL_STATE.user as User });
     }
 

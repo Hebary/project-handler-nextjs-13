@@ -17,7 +17,7 @@ export interface ProjectsState {
     contributor: User | undefined;
 }
 
-const Projects_INITIAL_STATE: ProjectsState = {
+const PROJECTS_INITIAL_STATE: ProjectsState = {
    projects:[],
    project: undefined,
    task: undefined,
@@ -26,8 +26,14 @@ const Projects_INITIAL_STATE: ProjectsState = {
 
 export const ProjectsProvider: React.FC<Props> = ({ children }) => {
 
-    const [state, dispatch] = useReducer(projectsReducer, Projects_INITIAL_STATE);
-
+    const [state, dispatch] = useReducer(projectsReducer, PROJECTS_INITIAL_STATE);
+    
+    //open socket-io connection
+    // useEffect(() => {
+    //   socket = io(import.meta.env.VITE_BACKEND_URL);
+    // }, [])
+    
+    
     // Get user projects and set them in the state
     useEffect(() => {
         const getUserProjects = async () => {
@@ -44,19 +50,18 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                 dispatch({type: '[PROJECTS]-LOAD_PROJECTS', payload: data});
             } catch( error) {
                 console.log({error});
+                Cookies.remove('token');
             }
         }
         getUserProjects()
     }, []);
     
-    //open socket-io connection
-    // useEffect(() => {
-    //   socket = io(import.meta.env.VITE_BACKEND_URL);
-    // }, [])
-    
-    
 
-    const updateProjectsInState = async () => {
+    const setProjects = async (projects: Project[]) => {
+        
+    }
+
+    const loadProjectsInState = async () => {
         try {
             const token = Cookies.get('token');
             if(!token) return;
@@ -67,12 +72,11 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                 }
             }
             const { data } = await pmApi.get<Project[]>('/projects', config);
-            
             dispatch({type: '[PROJECTS]-LOAD_PROJECTS', payload: data});
-        
         } catch( error) {
             console.log({error});
         }
+
     }
 
     const cleanProjectsState = () => {
@@ -118,8 +122,6 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
             }
             const { data } = await pmApi.put<Project>(`/projects/${state.project?._id}`, project , config);
             dispatch({ type: '[PROJECTS]-UPDATE_PROJECT', payload: data });
-            //clean the state of previous project
-            dispatch({ type: '[PROJECTS]-LOAD_PROJECT', payload: Projects_INITIAL_STATE.project });
         } catch (error) {
             console.log(error);
         }
@@ -138,7 +140,6 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
             const { data } = await pmApi.delete<Project>(`/projects/${id}`, config);
             console.log(data);
             dispatch({ type: '[PROJECTS]-DELETE_PROJECT', payload: id });
-            dispatch({ type: '[PROJECTS]-LOAD_PROJECT', payload: Projects_INITIAL_STATE.project });
         } catch (error) {
             console.log({error});
         }
@@ -267,7 +268,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
             const { data } = await pmApi.post(`/projects/delete-contributor/${state.project?._id}`,{ email}, config);
             console.log(data);
             dispatch({ type: '[PROJECTS]-DELETE_CONTRIBUTOR', payload: id });
-            dispatch({ type: '[PROJECTS]-SET_CONTRIBUTOR', payload: Projects_INITIAL_STATE.contributor });
+            dispatch({ type: '[PROJECTS]-SET_CONTRIBUTOR', payload: PROJECTS_INITIAL_STATE.contributor });
         } catch (error) {
             console.log(error);
         }
@@ -313,12 +314,12 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
 
     const deleteTaskSocket = (task: Task) => {
             dispatch({ type: '[PROJECTS]-DELETE_TASK', payload: task?._id as string});
-            dispatch({ type: '[PROJECTS]-SET_TASK', payload: Projects_INITIAL_STATE.task });
+            dispatch({ type: '[PROJECTS]-SET_TASK', payload: PROJECTS_INITIAL_STATE.task });
     }
 
     const updateTaskSocket = (task: Task) => {
         dispatch({ type: '[PROJECTS]-UPDATE_TASK', payload: task });
-        dispatch({ type: '[PROJECTS]-SET_TASK', payload: Projects_INITIAL_STATE.task });
+        dispatch({ type: '[PROJECTS]-SET_TASK', payload: PROJECTS_INITIAL_STATE.task });
     }
 
     const changeTaskStateSocket = (task: Task) => {
@@ -335,6 +336,8 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                     contributor: state.contributor,
                     createProject,
                     setProjectToState,
+                    loadProjectsInState,
+                    setProjects,
                     updateProject,
                     deleteProject,
                     createNewTask,
@@ -345,7 +348,6 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                     addContributor,
                     deleteContributor,
                     cleanProjectsState,
-                    updateProjectsInState,
                     changeTaskState,
                     searchProject,
                     addTaskSocket,

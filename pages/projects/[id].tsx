@@ -112,7 +112,7 @@ const ProjectPage:NextPage<Props> = ({ project }) => {
                             <Typography color='info.main' variant='h5' component='h1' sx={{ textAlign:'justify', letterSpacing: 1, fontWeight: 300, textTransform:'capitalize' }}>{project?.name}</Typography>
                             
                         { admin && 
-                            <Link href={`/projects/edit-project`}>
+                            <Link href={`/projects/edit-project/${project?._id}`}>
                                 <Button
                                     size='small'
                                     variant='text'
@@ -294,14 +294,15 @@ export const getServerSideProps: GetServerSideProps = async ({ req, params }) =>
         return{
             props:{
                     project: data || []
-                }
+                },
+                
             }
     } catch (error) {
         return {  
                 redirect: {
                     destination: '/projects',
-                    permanent: false
-                }
+                    permanent: false,
+                },
             }
         }
     }

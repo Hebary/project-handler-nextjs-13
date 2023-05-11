@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { GetServerSideProps } from 'next'
+import { useRouter } from 'next/router'
 import { Grid, Typography } from '@mui/material';
 import { NextPage } from 'next';
 import { grey } from "@mui/material/colors";
@@ -8,19 +8,24 @@ import { Project } from "../components/projects"
 import { FullScreenLoading } from '@/components/ui';
 import { pmApi } from '@/config';
 import { Project as IProject} from '@/interfaces';
+import { useAuth, useProjects } from '@/hooks';
 
-interface Props {
-   projects: IProject[]
-}
+// interface Props {
+//    projects: IProject[]
+// }
 
-export const IndexPage: NextPage<Props> = ({ projects }) => {
+export const IndexPage: NextPage = () => {
 
+   const { projects } = useProjects();
+   // const { isLogged, user } = useAuth();
    const [loading, setLoading] = useState(true);
 
    useEffect(() => {
-      setTimeout(() => setLoading(false), 4000);
+      setTimeout(() => setLoading(false), 3000);
+   // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [])
    
+
    return (
       <Layout>
                {  
@@ -48,49 +53,49 @@ export const IndexPage: NextPage<Props> = ({ projects }) => {
 // You should use getServerSideProps when:
 // - Only if you need to pre-render a page whose data must be fetched at request time
 
-export const getServerSideProps: GetServerSideProps = async ({req}) => {
-   const { token = "" } = req.cookies;
-   if(!token){ 
-      return {
-         redirect:{
-            destination: '/auth/login',
-            permanent: false
-         }
-      }
-   } 
+// export const getServerSideProps: GetServerSideProps = async ({req}) => {
+//    const { token = "" } = req.cookies;
+//    if(!token){ 
+//       return {
+//          redirect:{
+//             destination: '/auth/login',
+//             permanent: false
+//          }
+//       }
+//    } 
 
-   const config = {
-      headers: {
-          'Content-Type' : 'application/json',
-          'Authorization': `Bearer ${token}`
-      }
-   }
+//    const config = {
+//       headers: {
+//           'Content-Type' : 'application/json',
+//           'Authorization': `Bearer ${token}`
+//       }
+//    }
 
-   try {
-      const { data } = await pmApi.get<IProject[]>('/projects', config); 
-      const projects = data;
-      return {
-         props: {
-            projects
-         }
-      }
-   } catch(err) {
-      if(err){
-         return {
-            redirect:{
-               destination: '/projects',
-               permanent: false
-            }
-         }
-      }
-   }
+//    try {
+//       const { data } = await pmApi.get<IProject[]>('/projects', config); 
+//       const projects = data;
+//       return {
+//          props: {
+//             projects
+//          }
+//       }
+//    } catch(err) {
+//       if(err){
+//          return {
+//             redirect:{
+//                destination: '/',
+//                permanent: false
+//             }
+//          }
+//       }
+//    }
 
-   return {
-      redirect: {
-         destination: '/projects',
-         permanent: false
-      }
-   }
-}
+//    return {
+//       redirect: {
+//          destination: '/',
+//          permanent: false
+//       }
+//    }
+// }
 
 export default IndexPage

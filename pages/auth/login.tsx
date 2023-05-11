@@ -6,7 +6,7 @@ import { Box, Button, Chip, Grid, TextField, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { AuthLayout } from '../../components/layout';
 import { utils } from '../../utils';
-import { useAuth } from '@/hooks';
+import { useAuth, useProjects } from '@/hooks';
 import { ErrorOutline } from '@mui/icons-material';
 import { useState } from 'react';
 
@@ -18,11 +18,9 @@ type FormData = {
 export const Login: NextPage = () => {
 
     const { loginUser }  = useAuth();
-    
+    const { loadProjectsInState }  = useProjects();
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
-    
     const { query, replace} = useRouter();
-    
     const [error, setError] = useState(false);
     const [message, setMessage] = useState('');
 
@@ -34,6 +32,7 @@ export const Login: NextPage = () => {
             setTimeout(() => setError(false), 1700);
             return;
         }
+        loadProjectsInState();
 
         // navigate to previous url 
         const destination = query.p?.toString() || '/';

@@ -13,7 +13,7 @@ type FormData = {
     email:string;
 }
 
-export const NewContributor: React.FC = () => {
+ const NewContributor: React.FC = () => {
     
     // const { findContributor, contributor, addContributor, project } = useProjects();
     const { handleSubmit, register, formState:{errors} } = useForm<FormData>()
@@ -77,3 +77,4 @@ export const NewContributor: React.FC = () => {
         </Layout>
     )
 }
+export default NewContributor;

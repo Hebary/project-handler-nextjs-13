@@ -9,6 +9,8 @@ interface ContextProps {
     contributor: User | undefined;
     createProject: (project: Project) => void;
     setProjectToState: (project: Project) => void;
+    setProjects: (projects: Project[]) => void;
+    loadProjectsInState : () => void;
     updateProject: (project: Project) => void;
     deleteProject: (id: string) => void;
     createNewTask: (task: Task) => void;
@@ -19,7 +21,6 @@ interface ContextProps {
     addContributor: (contributorEmail: string) => void;
     cleanProjectsState: () => void;
     deleteContributor: (id: string, email: string) => void;
-    updateProjectsInState: () => void;
     changeTaskState: (id: string) => void;
     searchProject:(query: string) => void;
     //socket.io

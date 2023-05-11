@@ -38,11 +38,13 @@ export const projectsReducer = (state: ProjectsState, action: ProjectsActionType
     case '[PROJECTS]-UPDATE_PROJECT': 
       return{
         ...state,
-        projects: state.projects.map(project => project._id === action.payload._id ? action.payload : project)
+        project: undefined,
+        projects:state.projects.map(project => project._id === action.payload._id ? action.payload : project)
         }
     case '[PROJECTS]-DELETE_PROJECT':
       return{
         ...state,
+        project: undefined,
         projects: state.projects.filter(project => project._id !== action.payload)
         }
     case '[PROJECTS]-ADD_TASK':

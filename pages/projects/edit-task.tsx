@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { Box, Button, Chip, FormControl, Grid, Input, InputLabel, MenuItem, Modal, Select, TextField, Typography } from "@mui/material";
 import {  CheckCircleOutline, DeleteForeverOutlined } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
-// import { useProjects, useUI } from "../../hooks";
+import { useProjects, useUI } from "../../hooks";
 import { Layout } from "../../components/layout"
 import { FullScreenLoading } from '../../components/ui';
 import { Task } from '../../components/projects';
@@ -19,11 +19,11 @@ type FormData = {
 
 const PRIORITY = ['Low', 'Medium', 'High'];
 
-export const ProjectEditTask: React.FC = () => {
+const ProjectEditTask: React.FC = () => {
 
     // const { project, getTaskById, task, updateTask, deleteTask } = useProjects();
 
-    // const { isModalOpen, toggleModal } = useUI();
+    const { isModalOpen, toggleModal } = useUI();
     const [ loading, setLoading ] = useState(false);
     const [ alert, setAlert ] = useState(false);
     
@@ -54,7 +54,7 @@ export const ProjectEditTask: React.FC = () => {
         setTimeout(() => {
             setAlert(false)
             reset();
-            // toggleModal();
+            toggleModal();
             // router.push(`/projects/${project?._id}`);
         }, 1500);
     }
@@ -84,8 +84,8 @@ export const ProjectEditTask: React.FC = () => {
                         </Box> */}
 
                         <Modal
-                            open={ true }
-                            onClose={ ()=>{} }
+                            open={ isModalOpen }
+                            onClose={ toggleModal }
                             aria-labelledby="parent-modal-title"
                             aria-describedby="parent-modal-description"
                             sx={{width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center'}}
@@ -180,3 +180,5 @@ export const ProjectEditTask: React.FC = () => {
         </Layout>
     )
 }
+
+export default ProjectEditTask
