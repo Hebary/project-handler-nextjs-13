@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { NextPage, GetServerSideProps } from 'next';
+import { NextPage } from 'next';
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { Box, Button, Chip, FormControl, Grid, IconButton, Input, InputLabel, MenuItem, Modal, Select, TextField, Typography } from "@mui/material";
-import { AddCircleOutlineRounded, CheckCircleOutline, EditOutlined, GroupAdd, PersonRemoveOutlined } from '@mui/icons-material';
+import { AddCircleOutlineRounded, CheckCircleOutline, EditOutlined, GroupAdd, PersonRemove } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
 import { grey } from '@mui/material/colors';
 
@@ -120,7 +120,8 @@ const ProjectPage:NextPage = () => {
                         } 
                         </Box>
                         <Box sx={{display:'flex', alignItems:'center', px:2, justifyContent:'space-between', my:2}} className='fadeInUp' >
-                            <Typography variant='h6' component='h2' sx={{ fontWeight:500, textTransform:'capitalize' }}>Tasks</Typography>
+                            <Typography variant='h6' sx={{ fontWeight:500, textTransform:'capitalize' }}>Tasks</Typography>
+                            <Typography variant='body2' sx={{ fontWeight:300, textTransform:'capitalize' }}><span style={{fontSize:'12px', textTransform:'uppercase', fontWeight:'bold' }}>Client:</span> {project?.client}</Typography>
                             { admin && 
                                 <Button variant='text' onClick={ toggleModal }  sx={{ ":hover":{bgcolor:'secondary.main', color:'#FFF'},
                                  textTransform:'capitalize', py:0, fontWeight:500 }} endIcon={<AddCircleOutlineRounded/>}>
@@ -143,8 +144,9 @@ const ProjectPage:NextPage = () => {
                             <Box sx={{display:'flex', alignItems:'center', px:2, justifyContent:'space-between', my:2}} className='fadeInUp' >
                                 <Typography variant='h6' component='h2' sx={{ fontWeight:500, textTransform:'capitalize' }}>Contributors</Typography>
                                 <Link href={`/projects/new-contributor/${project?._id}`} style={{textDecoration:'none'}}>
-                                        <Button variant='text' sx={{ ":hover":{bgcolor:'secondary.main', color:'#FFF'   }, textTransform:'capitalize', py:0, fontWeight:500 }} size='small' endIcon={<GroupAdd/>}>
-                                            Add 
+                                <Button variant='text' onClick={ toggleModal }  sx={{ ":hover":{bgcolor:'secondary.main', color:'#FFF'},
+                                        textTransform:'capitalize', py:0, fontWeight:500 }} endIcon={<GroupAdd/>}>
+                                            add new
                                         </Button>
                                 </Link>
                             </Box>
@@ -154,13 +156,13 @@ const ProjectPage:NextPage = () => {
                                     <Grid key={contributor?._id} 
                                         sx={{ display:'flex', alignItems:'center', flexWrap:'wrap', justifyContent:'space-between', gap:1, mb:2, borderRadius:3, p:3, mx:4, boxShadow:'0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)', cursor:'pointer', ":hover":{ bgcolor:grey[200] }, transition: 'all .3s ease-in-out' }} 
                                         item xs={12} md={10} className='fadeInUp' >
-                                        <Typography color='info.main' variant='body1' fontWeight={ 500 } sx={{ mr:1, letterSpacing:1, fontWeight:300, textTransform:'capitalize' }}>{contributor?.name}</Typography>
-                                        <Typography color='primary.main' variant='body2' fontWeight={ 500 } sx={{ mr:1, letterSpacing:1, fontWeight:300, textTransform:'capitalize' }}>{contributor?.email}</Typography>
+                                        <Typography color='info.main' variant='body1' fontWeight={ 500 } sx={{ mr:1, letterSpacing:1, fontWeight:500, textTransform:'capitalize' }}>{contributor?.name}</Typography>
+                                        <Typography color='primary.main' variant='body2' fontWeight={ 500 } sx={{ mr:1, letterSpacing:1, fontWeight:500 }}>{contributor?.email}</Typography>
                                         { admin &&
                                             <IconButton
                                                     onClick={ () => onDeleteContributor(contributor?._id as string) }
                                                 >
-                                                <PersonRemoveOutlined sx={{color:'primary.main'}} />    
+                                                <PersonRemove sx={{color:'primary.main'}} />    
                                             </IconButton>
                                         }
                                     </Grid> 

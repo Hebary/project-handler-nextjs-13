@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;500;700;900&display=swap');
 
+body {
+  font-family: 'Red Hat Display', sans-serif;
+  background-color: #e7e7e7;
+}
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
@@ -17,13 +22,13 @@
   color: #505757;
 }
 .fadeInUp {
-  animation : fadeInUp .3s cubic-bezier(0.090, 0.275, 0.565, .800) both;
+  animation : fadeInUp .38s cubic-bezier(0.090, 0.175, 0.365, .900) both;
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: scale(.88)
+    transform: scale(.95)
   }
   to {
     opacity: 1;

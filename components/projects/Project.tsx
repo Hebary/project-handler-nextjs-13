@@ -9,7 +9,7 @@ interface Props {
     project: IProject
 }
 
-export const Project: React.FC<Props> = ({project}) => {
+export const Project: React.FC<Props> = ({ project }) => {
     const { user } = useAuth();
 
 
@@ -20,8 +20,8 @@ export const Project: React.FC<Props> = ({project}) => {
                    className='red-hat-font'>{ project?.name } <span style={{color: blue[900], fontWeight:500, marginLeft:'20px', display:'inline-block'}}> { project?.client } </span>
                 </Typography>
                 <Box flex={1} />
-                <Typography sx={{color:'info.main', fontSize:'12px', mr:3, fontWeight:500, textTransform:'uppercase' }} variant='body2'>{ user?._id === project.creator ? 'Creator':'Contributor' }</Typography>
-                <Link href={`/projects/${project?._id}`} style={{ textDecoration:'none', fontSize:17, color:'#8EA7E9', fontWeight:300, textTransform:'capitalize'}} >{'view project'}</Link>
+                <Typography sx={{color:'info.main', fontSize:'12px', mr:3, fontWeight:500, textTransform:'uppercase' }} variant='body2'>{ user?._id === project.creator ? '':'Contributor' }</Typography>
+                <Link href={`/projects/${project?._id}`} style={{ textDecoration:'none', fontSize:15, color:'#333', fontWeight:700, textTransform:'capitalize'}} >{'view'}</Link>
             </Box>
         </Grid>
     )

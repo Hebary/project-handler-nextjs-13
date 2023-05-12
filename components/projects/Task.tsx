@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Box, Button, Grid, Typography } from "@mui/material"
-import {  green, orange, blue } from "@mui/material/colors"
+import {  green, orange, grey, blue } from "@mui/material/colors"
 import { CheckCircleOutline, EditOutlined, RuleRounded } from "@mui/icons-material"
 // import { useProjects } from "../../hooks"
 import { Task as ITask } from "../../interfaces"
@@ -24,7 +24,8 @@ export const Task: React.FC<Props> = ({ task, showEdit = false }) => {
 
     return (
         <>
-            <Grid key={task?._id} sx={{ mb:3, borderRadius:3, p:3, mx:4, boxShadow:'0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)', cursor:'pointer', ":hover":{ bgcolor:blue[50] }, transition: 'all .3s ease-in-out' }} item xs={12} md={10} >
+            <Grid key={task?._id} sx={{ mb:3, borderRadius:3, p:3, mx:4, boxShadow:'0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)', 
+                    cursor:'pointer', bgcolor:'#fff', ":hover":{ bgcolor:blue[50] }, transition: 'all .3s ease-in-out' }} item xs={12} md={10} >
                 <Box display='flex' alignItems='center' justifyContent={'space-between'} flexWrap='wrap' gap={1}>
                     <Typography variant='body1' sx={{ fontWeight:500 }} className='red-hat-font'>{ task?.name }</Typography>
                     <Typography variant='body2' sx={{ fontWeight:300 }} className='red-hat-font'>{ task?.description }</Typography>
@@ -42,8 +43,8 @@ export const Task: React.FC<Props> = ({ task, showEdit = false }) => {
                         } 
                         </Box>                
                     { admin && showEdit===false &&
-                        <Link href={`/projects/task/${task?._id}`} style={{ textDecoration:'none', fontSize:17, color:'#8EA7E9', fontWeight:300, textTransform:'capitalize'}} >
-                            <Button className='fadeInUp red-hat-font' size='small' sx={{textTransform:'capitalize'}}endIcon={<EditOutlined />} >
+                        <Link href={`/projects/task/${task?._id}`} style={{ textDecoration:'none', fontSize:17, color:'#8EA7E9',  fontWeight:300, textTransform:'capitalize'}} >
+                            <Button className='fadeInUp red-hat-font' size='small' sx={{ ':hover':{ bgcolor: 'primary.main', color:'#FFF' }, textTransform:'capitalize'} } endIcon={<EditOutlined />} >
                                 Edit
                             </Button>
                         </Link>
