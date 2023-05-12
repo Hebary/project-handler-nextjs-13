@@ -27,7 +27,7 @@ export const Navbar: React.FC = () => {
         <AppBar>
             <Toolbar>
                     <Link href='/' style={{ fontSize: 18, textDecoration:'none' }}>
-                        <Box display='flex' color={'#E9D498'}>
+                        <Box display='flex' color={'#FFF'}>
                           <CategoryOutlined sx={{ fontSize: '30px' }}/>
                           <Box>
                             <Typography sx={{ fontSize: '12px', ml:.3}} className='red-hat-font'>Project</Typography>
@@ -39,7 +39,7 @@ export const Navbar: React.FC = () => {
                 <Box flex={1}/>
 
                 <Box gap={3} className='red-hat-font' sx={{borderRadius:10, display: isSearchVisible ? 'none' : { xs: 'none', sm: 'flex' } }}>
-                    <Link href='/' style={{ fontSize: 18, textDecoration:'none', color:'#E9D498' }}>
+                    <Link href='/' style={{ fontSize: 18, textDecoration:'none', color:'#FFF' }}>
                         Projects
                     </Link>
                 </Box>
@@ -54,7 +54,7 @@ export const Navbar: React.FC = () => {
                 isSearchVisible ?
                     (
                         <Input
-                            sx={{ display: {sm: 'flex'}, width:'110px', color:'#E9D498' }}
+                            sx={{ display: {sm: 'flex'}, width:'110px', color:'#FFF' }}
                             className='fadeIn'
                             type='text'
                             autoFocus   
@@ -63,8 +63,8 @@ export const Navbar: React.FC = () => {
                             onKeyUp={ (e) => e.key === 'Enter' && onSearch()}
                             placeholder="Search..."
                             endAdornment={
-                                <InputAdornment sx={{color:'#E9D498'}} position="end">
-                                    <IconButton sx={{color:'#E9D498'}}
+                                <InputAdornment sx={{color:'#FFF'}} position="end">
+                                    <IconButton sx={{color:'#FFF'}}
                                         onClick={ ()=> setIsSearchVisible(!isSearchVisible) }
                                     >
                                      <ClearOutlined />
@@ -77,17 +77,17 @@ export const Navbar: React.FC = () => {
                     (
                         <IconButton
                             onClick={ ()=> setIsSearchVisible(!isSearchVisible) }
-                            sx={{ display: { sm: 'flex' }, color:'#E9D498' }}
+                            sx={{ display: { sm: 'flex' }, color:'#FFF' }}
                             className='fadeIn'
 
                         >
-                            <SearchOutlined sx={{color:'#E9D498'}} />
+                            <SearchOutlined sx={{color:'#FFF'}} />
                         </IconButton>
                     )
                 }
 
                 <IconButton onClick={ toggleMenu }>
-                    <MenuOutlined sx={{ color: '#E9D498' }}/>
+                    <MenuOutlined sx={{ color: '#FFF' }}/>
                 </IconButton>
         
                 </Box>
