@@ -33,7 +33,6 @@ export const Login: NextPage = () => {
             return;
         }
         loadProjectsInState();
-
         // navigate to previous url 
         const destination = query.p?.toString() || '/';
         replace(destination);
