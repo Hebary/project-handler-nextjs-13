@@ -90,7 +90,7 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
 
     const createAccount = async ( name: string, email: string, password: string ): Promise<{ hasError: boolean, message?: string }> => {
         try {
-            const { data } = await pmApi.post<User>('/users/registry', { name, email, password })    
+            const { data } = await pmApi.post<User>('/users', { name, email, password })    
             Cookies.set('token', data.token);
             dispatch({ 
                     type: '[AUTH]-LOGIN', 
