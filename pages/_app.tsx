@@ -1,11 +1,11 @@
 import type { AppProps } from 'next/app'
-import { AuthProvider } from '@/context/auth'
 import { ThemeProvider } from '@emotion/react'
-import theme from '@/theme'
 import { CssBaseline } from '@mui/material'
-import { UiProvider } from '@/context/ui'
+import { AuthProvider } from '@/context/auth'
 import { ProjectsProvider } from '@/context/projects'
+import { UiProvider } from '@/context/ui'
 import '@/styles/globals.css'
+import theme from '@/theme'
 
 export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
     return (

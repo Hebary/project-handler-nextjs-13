@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Grid, Typography } from '@mui/material';
-import { NextPage } from 'next';
+import { NextPage, GetStaticPaths, GetStaticProps } from 'next';
 import { grey } from "@mui/material/colors";
+
+import { useProjects } from '@/hooks';
 import { Layout } from "../components/layout"
 import { Project } from "../components/projects"
 import { FullScreenLoading } from '@/components/ui';
-import { useProjects } from '@/hooks';
+
 
 export const IndexPage: NextPage = () => {
 
    const { projects } = useProjects();
-   const [loading, setLoading] = useState(true);
+   const [ loading, setLoading ] = useState(true);
 
    useEffect(() => {
       setTimeout(() => setLoading(false), 3000);
@@ -41,7 +43,9 @@ export const IndexPage: NextPage = () => {
       </Layout>
    )
 }
+// You should use getStaticPaths if you’re statically pre-rendering pages that use dynamic routes
 
+ 
 // You should use getServerSideProps when:
 // - Only if you need to pre-render a page whose data must be fetched at request time
 

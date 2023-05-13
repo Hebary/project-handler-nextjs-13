@@ -2,10 +2,8 @@ import Link from 'next/link'
 import { Box, Button, Grid, Typography } from "@mui/material"
 import {  green, orange, grey, blue } from "@mui/material/colors"
 import { CheckCircleOutline, EditOutlined, RuleRounded } from "@mui/icons-material"
-// import { useProjects } from "../../hooks"
+import { useProjects, useAdmin } from '@/hooks'
 import { Task as ITask } from "../../interfaces"
-import { useAdmin } from '@/hooks'
-// import { useAdmin } from '../../hooks/useAdmin';
 
 
 interface Props {
@@ -15,11 +13,11 @@ interface Props {
 
 export const Task: React.FC<Props> = ({ task, showEdit = false }) => {
 
-    // const { changeTaskState } = useProjects();
+    const { changeTaskState } = useProjects();
     const admin = useAdmin();
 
     const onChangeTaskState = () => {
-        // changeTaskState(task?._id as string);
+        changeTaskState(task?._id as string);
     }
 
     return (

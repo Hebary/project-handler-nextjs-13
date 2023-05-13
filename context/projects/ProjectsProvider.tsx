@@ -1,11 +1,13 @@
 import { useReducer, useEffect } from 'react';
-import { ProjectsContext, projectsReducer } from './';
-import { pmApi } from '../../config';
-import { Project, Task, User } from '../../interfaces';
+import { useRouter } from 'next/router'
+import { io, Socket } from 'socket.io-client'
 import Cookies from 'js-cookie';
 
-// import { io, Socket } from 'socket.io-client'
-// let socket : Socket;
+import { pmApi } from '../../config';
+import { ProjectsContext, projectsReducer } from './';
+import { Project, Task, User } from '../../interfaces';
+
+ let socket : Socket;
 interface Props {
    children: React.ReactNode
 }
@@ -28,10 +30,11 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
 
     const [state, dispatch] = useReducer(projectsReducer, PROJECTS_INITIAL_STATE);
     
-    //open socket-io connection
-    // useEffect(() => {
-    //   socket = io(import.meta.env.VITE_BACKEND_URL);
-    // }, [])
+    const router = useRouter();
+    // open socket-io connection
+    useEffect(() => {
+      socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string);
+    }, [])
     
     
     // Get user projects and set them in the state
@@ -51,9 +54,11 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
             } catch( error) {
                 console.log({error});
                 Cookies.remove('token');
+                router.push('/auth/login')
             }
         }
         getUserProjects()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     
 
@@ -104,9 +109,6 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
         }
     }
 
-    // const setProjectToState = async (project: Project) => {
-    //     dispatch({ type: '[PROJECTS]-LOAD_PROJECT', payload: project });
-    // }
     const setTaskToState = async (task: Task) => {
         dispatch({ type: '[PROJECTS]-SET_TASK', payload: task });
     }
@@ -159,7 +161,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
             const { data } = await pmApi.post<Task>(`/task`, task, config);
             
             //SOCKET-IO
-            // socket.emit('add task', data);
+            socket.emit('add task', data);
             
 
         } catch (error) {
@@ -179,12 +181,13 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                 }
             }
             const { data } = await pmApi.put<Task>(`/task/${state.task?._id}`, task, config);
-            // socket.emit('update task', data);
+            socket.emit('update task', data);
         }catch (error) {
             console.log({error});
         }
 
     }
+
     const getProjectById = async (id: string) => {
         const config = {
             headers: {
@@ -215,7 +218,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                 const { data } = await pmApi.delete<Task>(`/task/${task._id}`, config);
                 console.log(data);
                 
-                // socket.emit('delete task', task);
+                socket.emit('delete task', task);
             } catch (error) {
             console.log({error});
         }
@@ -287,7 +290,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                 }
             }
             const { data } = await pmApi.post<Task>(`/task/state/${id}`,{}, config)
-            // socket.emit('complete task', data);
+            socket.emit('complete task', data);
 
         } catch (error) {
             console.log(error);
@@ -351,6 +354,7 @@ export const ProjectsProvider: React.FC<Props> = ({ children }) => {
                     cleanProjectsState,
                     changeTaskState,
                     searchProject,
+                    //socket
                     addTaskSocket,
                     deleteTaskSocket,
                     updateTaskSocket,

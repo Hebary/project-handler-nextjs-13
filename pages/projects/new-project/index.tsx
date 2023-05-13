@@ -3,9 +3,9 @@ import { useRouter } from 'next/router'
 import { useForm } from 'react-hook-form';
 import { Box, Button, Chip, Grid, TextField, Typography, Input } from '@mui/material';
 import { CheckCircleOutline } from '@mui/icons-material';
-import { Layout } from '../../components/layout';
-import { useProjects } from '../../hooks';
-import { Project } from '../../interfaces';
+import { Layout } from '../../../components/layout';
+import { useProjects } from '../../../hooks';
+import { Project } from '../../../interfaces';
 import { NextPage } from 'next';
 
 type FormData = {

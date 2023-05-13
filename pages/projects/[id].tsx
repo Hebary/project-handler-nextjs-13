@@ -11,10 +11,9 @@ import { Layout } from "../../components/layout"
 import { FullScreenLoading } from '../../components/ui';
 import { useProjects, useUI, useAdmin } from "../../hooks";
 import { Task } from '../../components/projects';
-import { Task as ITask, Project } from "../../interfaces"
-import { pmApi } from '@/config';
-// import { io, Socket } from 'socket.io-client'
-// let socket: Socket;
+import { Task as ITask } from "../../interfaces"
+import { io, Socket } from 'socket.io-client'
+let socket: Socket;
 
 
 
@@ -46,39 +45,40 @@ const ProjectPage:NextPage = () => {
         setLoading(true);
         getProjectById(router.query.id as string);
         setTimeout(() => setLoading(false), 3000);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     //SOCKET-IO ROOM CONNECTION & TASK LISTENERS
-    // useEffect(() => {
-    //     socket = io();
-    //     socket.emit('open project', id);
-    // },[id])
+    useEffect(() => {
+        socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string);
+        socket.emit('open project', router.query.id as string);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[])
 
-    // useEffect(() => {
-    //     socket.on('task added', (task: ITask) => {
-    //         addTaskSocket(task);
-    //     })
+    useEffect(() => {
+        socket.on('task added', (task: ITask) => {
+            addTaskSocket(task);
+        })
 
-    //     socket.on('task deleted', (task: ITask) => {
-    //         deleteTaskSocket(task as ITask);
-    //     })
+        socket.on('task deleted', (task: ITask) => {
+            deleteTaskSocket(task as ITask);
+        })
         
-    //     socket.on('updated task', (task: ITask) => {
-    //         updateTaskSocket(task as ITask);
-    //     })
+        socket.on('updated task', (task: ITask) => {
+            updateTaskSocket(task as ITask);
+        })
 
-    //     socket.on('completed task', (task: ITask) => {
-    //         changeTaskStateSocket(task as ITask);
-    //     })
+        socket.on('completed task', (task: ITask) => {
+            changeTaskStateSocket(task as ITask);
+        })
 
-    //     return () => {
-    //         socket.off('task added');
-    //         socket.off('task deleted');
-    //         socket.off('updated task');
-    //         socket.off('completed task');
-    //     }
-    // })
+        return () => {
+            socket.off('task added');
+            socket.off('task deleted');
+            socket.off('updated task');
+            socket.off('completed task');
+        }
+    })
   
 
 

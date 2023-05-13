@@ -65,9 +65,9 @@ export const ProjectEditTask: NextPage<Props> = ({ task }) => {
     }
 
     const onDeleteTask = () => {
-        // confirm('Are you sure you want to delete this task?') &&
-        // deleteTask(task as ITask);
-        // router.push(`/projects/${project?._id}`);
+        confirm('Are you sure you want to delete this task?') &&
+        deleteTask(task as ITask);
+        router.push(`/projects/${project?._id}`);
     }
     return (
         <Layout>
