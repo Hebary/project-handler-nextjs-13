@@ -8,6 +8,7 @@ A project where i've learned modern full-stack development.
 - Typescript
 - Material UI
 - Icons from MUI
+- Socket-io
 - contextAPI
 - MongoDB atlas
 
